@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - app-network
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+
+  idesc:
+    image: suranov42/idesc:0.0.1
+    container_name: spring_app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+    volumes:
+      - ./img:/app/img
+    environment:
+      UPLOAD_FILES_PATH: .\img
+      JWT_SECRET: very-very-secret-key-should-be-almost-infinity
+      JWT_EXPIRE: 86400
+
+
+
+networks:
+  app-network:
+    driver: bridge
